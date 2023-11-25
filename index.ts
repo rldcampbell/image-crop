@@ -13,12 +13,9 @@ const getImageDimensions = async (path: string): Promise<Dimensions> => {
   }
 };
 
-const getAspectRatio = ([width, height]: Dimensions) => width / height;
-
 const getBestSquares = (dimensions: Dimensions): Square[] => {
-  const aspectRatio = getAspectRatio(dimensions);
   const [width, height] = dimensions;
-  const aspectRatioCeil = Math.ceil(aspectRatio);
+  const aspectRatioCeil = Math.ceil(width / height);
   const squareSizeA = ~~(width / aspectRatioCeil);
   const areaA = aspectRatioCeil * squareSizeA * squareSizeA;
   const areaB = (aspectRatioCeil - 1) * height * height;
