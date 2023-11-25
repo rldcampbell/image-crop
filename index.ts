@@ -5,8 +5,8 @@ type Square = [x: number, y: number, size: number];
 
 const getImageDimensions = async (path: string): Promise<Dimensions> => {
   try {
-    const metadata = await sharp(path).metadata();
-    return [metadata.width || 0, metadata.height || 0];
+    const { width = 0, height = 0 } = await sharp(path).metadata();
+    return [width, height];
   } catch (error) {
     console.error("Error extracting image dimensions:", error);
     throw error;
@@ -16,12 +16,13 @@ const getImageDimensions = async (path: string): Promise<Dimensions> => {
 const getAspectRatio = ([width, height]: Dimensions) => width / height;
 
 const getBestSquares = (dimensions: Dimensions): Square[] => {
-  const [width, height] = dimensions;
   const aspectRatio = getAspectRatio(dimensions);
+  const [width, height] = dimensions;
   const aspectRatioCeil = Math.ceil(aspectRatio);
   const squareSizeA = ~~(width / aspectRatioCeil);
   const areaA = aspectRatioCeil * squareSizeA * squareSizeA;
   const areaB = (aspectRatioCeil - 1) * height * height;
+
   if (areaA >= areaB) {
     const y0 = ~~((height - squareSizeA) / 2);
 
@@ -37,7 +38,7 @@ const getBestSquares = (dimensions: Dimensions): Square[] => {
     .map((_, i) => [x0 + i * height, 0, height]);
 };
 
-const cropToFile = async (
+const cropToFile = (
   inputPath: string,
   [left, top, size]: Square,
   outputPath: string
