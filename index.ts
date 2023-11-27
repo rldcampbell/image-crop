@@ -13,24 +13,26 @@ const getImageDimensions = async (path: string): Promise<Dimensions> => {
   }
 };
 
-const getBestSquares = (dimensions: Dimensions): Square[] => {
-  const [width, height] = dimensions;
-  const aspectRatioCeil = Math.ceil(width / height);
-  const squareSizeA = ~~(width / aspectRatioCeil);
-  const areaA = aspectRatioCeil * squareSizeA * squareSizeA;
-  const areaB = (aspectRatioCeil - 1) * height * height;
+const getBestSquares = ([width, height]: Dimensions): Square[] => {
+  const aspectRatioFloor = ~~(width / height);
+  const squareSizeFitWidth = ~~(width / (aspectRatioFloor + 1));
+  const areaFitWidth =
+    (aspectRatioFloor + 1) * squareSizeFitWidth * squareSizeFitWidth;
+  const areaFitHeight = aspectRatioFloor * height * height;
 
-  if (areaA >= areaB) {
-    const y0 = ~~((height - squareSizeA) / 2);
+  if (areaFitWidth >= areaFitHeight) {
+    // fit squares to full width
+    const y0 = ~~((height - squareSizeFitWidth) / 2);
 
-    return new Array(aspectRatioCeil)
+    return new Array(aspectRatioFloor + 1)
       .fill(null)
-      .map((_, i) => [i * squareSizeA, y0, squareSizeA]);
+      .map((_, i) => [i * squareSizeFitWidth, y0, squareSizeFitWidth]);
   }
 
-  const x0 = ~~((width - (aspectRatioCeil - 1) * height) / 2);
+  // fit squares to full height
+  const x0 = ~~((width - aspectRatioFloor * height) / 2);
 
-  return new Array(aspectRatioCeil - 1)
+  return new Array(aspectRatioFloor)
     .fill(null)
     .map((_, i) => [x0 + i * height, 0, height]);
 };
