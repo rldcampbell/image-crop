@@ -4,13 +4,8 @@ type Dimensions = [width: number, height: number];
 type Square = [x: number, y: number, size: number];
 
 const getImageDimensions = async (path: string): Promise<Dimensions> => {
-  try {
-    const { width = 0, height = 0 } = await sharp(path).metadata();
-    return [width, height];
-  } catch (error) {
-    console.error("Error extracting image dimensions:", error);
-    throw error;
-  }
+  const { width = 0, height = 0 } = await sharp(path).metadata();
+  return [width, height];
 };
 
 const getBestSquares = ([width, height]: Dimensions): Square[] => {
@@ -63,6 +58,8 @@ const splitImage = async (path: string, prefix: string) => {
 const imagePath = "./sourceImages/penarth.jpg";
 const outputPathPrefix = "./splitImages/penarth_";
 
-await splitImage(imagePath, outputPathPrefix);
-
-console.log("Done.");
+await splitImage(imagePath, outputPathPrefix)
+  .catch(console.error)
+  .then(() => {
+    console.log("Done.");
+  });
